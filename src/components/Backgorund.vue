@@ -55,7 +55,7 @@
     // 画月亮
     function drawMoon() {
       let moon: HTMLImageElement = document.getElementById("moon");
-      let centerX = canvas.width - 200,
+      let centerX = canvas.width - 1600,
           centerY = 100,
           width = 80;
   
