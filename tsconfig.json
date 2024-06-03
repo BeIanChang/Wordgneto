@@ -1,0 +1,67 @@
+{
+    "compilerOptions": {
+      // 编译选项
+      "target": "ES6", // 指定 ECMAScript 目标版本为 ES6
+      "useDefineForClassFields": true, // 启用对类字段的新定义方式支持
+      "allowJs": true, // 允许编译 JavaScript 文件
+      "module": "ESNext", // 指定模块系统为 ESNext
+      "lib": [
+        "ESNext", // 包含 ESNext 标准库
+        "DOM", // 包含 DOM 标准库
+        "DOM.Iterable" // 包含可迭代的 DOM 标准库
+      ],
+      "skipLibCheck": true, // 跳过库文件的类型检查
+  
+      // Bundler 模式
+      "moduleResolution": "bundler", // 模块解析策略设置为打包器
+      "allowImportingTsExtensions": true, // 允许导入带有扩展名的 TypeScript 文件
+      "resolveJsonModule": true, // 允许导入 JSON 文件作为模块
+      "isolatedModules": true, // 将每个文件作为单独的模块进行处理
+      "noEmit": true, // 不生成编译输出文件
+      "jsx": "preserve", // 保留 JSX 语法（不转换）
+  
+      // 代码检查
+      "strict": false, // 不启用所有严格类型检查选项
+      "noUnusedLocals": false, // 允许未使用的局部变量
+      "noUnusedParameters": false, // 允许未使用的函数参数
+      "noFallthroughCasesInSwitch": false, // 禁止 switch 语句的 case 语句穿透
+  
+      // 类型定义文件的位置
+      "typeRoots": [
+        "./node_modules/@types", // 默认的类型定义文件位置
+        "./node_modules" // 额外的类型定义文件位置
+      ],
+      "types": [
+        "vue/ref-macros", // Vue 的 ref 宏类型定义
+        "vite/client", // Vite 的客户端类型定义
+        "element-plus/global" // Element Plus 的全局类型定义
+      ],
+  
+      // 基础路径
+      "baseUrl": "src", // 将基础路径设置为 src 目录
+  
+      // 路径别名
+      "paths": {
+        "@/*": [
+          "*" // 将 @ 符号映射到 src 目录
+        ]
+      }
+    },
+    // 包含的文件和目录
+    "include": [
+      "src", // 包含 src 目录
+      "src/**/*.ts", // 包含所有 TypeScript 文件
+      "src/**/*.tsx", // 包含所有 TypeScript JSX 文件
+      "src/**/*.d.ts", // 包含所有类型定义文件
+      "src/**/*.vue", // 包含所有 Vue 文件
+      "auto-imports.d.ts", // 包含 auto-imports.d.ts 文件
+      "src/vite-env.d.ts" // 包含 vite-env.d.ts 文件
+    ],
+    // 引用其他配置文件
+    "references": [
+      {
+        "path": "./tsconfig.node.json" // 引用 tsconfig.node.json 配置文件
+      }
+    ]
+  }
+  

@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+      "composite": true, // 启用项目的增量编译，适用于大型项目和项目引用
+      "skipLibCheck": true, // 跳过库文件的类型检查，加快编译速度
+      "module": "ESNext", // 指定模块系统为 ESNext
+      "moduleResolution": "bundler", // 使用打包器的模块解析策略
+      "allowSyntheticDefaultImports": true // 允许合成默认导入，便于与非 TypeScript 模块的集成
+    },
+    "include": ["vite.config.ts"] // 包含 vite.config.ts 配置文件
+  }
+  
