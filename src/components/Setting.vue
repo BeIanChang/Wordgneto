@@ -10,11 +10,6 @@ import { DefaultShortcutKeyMap, Dict, DictType, ShortcutKey } from "@/types.ts";
 import BaseButton from "@/components/BaseButton.vue";
 import { APP_NAME, EXPORT_DATA_KEY, SAVE_DICT_KEY, SAVE_SETTING_KEY, SoundFileOptions } from "@/utils/const.ts";
 import VolumeIcon from "@/components/icon/VolumeIcon.vue";
-import { BaseState, useBaseStore } from "@/stores/base.ts";
-import * as copy from "copy-to-clipboard";
-import { saveAs } from "file-saver";
-import { checkAndUpgradeSaveDict, checkAndUpgradeSaveSetting, shakeCommonDict } from "@/utils";
-import { dayjs } from "element-plus";
 
 
 const emit = defineEmits<{
@@ -23,9 +18,7 @@ const emit = defineEmits<{
 
 const tabIndex = $ref(0)
 const settingStore = useSettingStore()
-const store = useBaseStore()
 //@ts-ignore
-const gitLastCommitHash = ref(LATEST_COMMIT_HASH);
 
 useDisableEventListener(() => undefined)
 useWatchAllSound()
@@ -45,14 +38,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   e.preventDefault()
 
   let shortcutKey = getShortcutKey(e)
-  // console.log('e', e, e.keyCode, e.ctrlKey, e.altKey, e.shiftKey)
-  // console.log('key', shortcutKey)
-
-  // if (shortcutKey[shortcutKey.length-1] === '+') {
-  //   settingStore.shortcutKeyMap[editShortcutKey] = DefaultShortcutKeyMap[editShortcutKey]
-  //   return ElMessage.warning('设备失败！')
-  // }
-
   if (editShortcutKey) {
     if (shortcutKey === 'Delete') {
       settingStore.shortcutKeyMap[editShortcutKey] = ''
@@ -68,57 +53,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   }
 })
 
-function resetShortcutKeyMap() {
-  editShortcutKey = ''
-  settingStore.shortcutKeyMap = cloneDeep(DefaultShortcutKeyMap)
-  ElMessage.success('恢复成功')
-}
-
-function exportData() {
-  let data = {
-    version: EXPORT_DATA_KEY.version,
-    val: {
-      setting: {
-        version: SAVE_SETTING_KEY.version,
-        val: settingStore.$state
-      },
-      dict: {
-        version: SAVE_DICT_KEY.version,
-        val: shakeCommonDict(store.$state)
-      }
-    }
-  }
-  let blob = new Blob([JSON.stringify(data)], {type: "text/plain;charset=utf-8"});
-  let date = new Date()
-  let dateStr = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`
-  saveAs(blob, `${APP_NAME}-User-Data-${dateStr}.json`);
-  ElMessage.success('导出成功！')
-}
-
-function importData(e) {
-  let file = e.target.files[0]
-  if (!file) return
-  // no()
-  let reader = new FileReader();
-  reader.onload = function (v) {
-    let str = v.target.result;
-    if (str) {
-      let obj = JSON.parse(str)
-      if (obj.version === EXPORT_DATA_KEY.version) {
-
-      } else {
-        //TODO
-      }
-      let data = obj.val
-      let settingState = checkAndUpgradeSaveSetting(data.setting)
-      settingStore.setState(settingState)
-      let dictState = checkAndUpgradeSaveDict(data.dict)
-      store.init(dictState)
-      ElMessage.success('导入成功！')
-    }
-  }
-  reader.readAsText(file);
-}
 </script>
 
 <template>
@@ -129,22 +63,12 @@ function importData(e) {
           <Icon icon="bx:headphone" width="20" color="#0C8CE9"/>
           <span>音效设置</span>
         </div>
-        <div class="tab" :class="tabIndex === 2 && 'active'" @click="tabIndex = 2">
-          <Icon icon="material-symbols:keyboard-outline" width="20" color="#0C8CE9"/>
-          <span>快捷键设置</span>
-        </div>
         <div class="tab" :class="tabIndex === 1 && 'active'" @click="tabIndex = 1">
           <Icon icon="icon-park-outline:setting-config" width="20" color="#0C8CE9"/>
-          <span>其他设置</span>
-        </div>
-        <div class="tab" :class="tabIndex === 3 && 'active'" @click="tabIndex = 3">
-          <Icon icon="mdi:database-cog-outline" width="20" color="#0C8CE9"/>
-          <span>数据管理</span>
+          <span>拼写设置</span>
         </div>
       </div>
-      <div class="git-log">
-        Build {{ gitLastCommitHash }}
-      </div>
+      
     </div>
     <div class="content">
       <div v-if="tabIndex === 0">
@@ -161,7 +85,7 @@ function importData(e) {
         </div>
         <div class="line"></div>
         <div class="row">
-          <label class="item-title">单词/句子自动发音</label>
+          <label class="item-title">单词自动发音</label>
           <div class="wrapper">
             <el-switch v-model="settingStore.wordSound"
                        inline-prompt
@@ -171,7 +95,7 @@ function importData(e) {
           </div>
         </div>
         <div class="row">
-          <label class="sub-title">单词/句子发音口音</label>
+          <label class="sub-title">单词发音口音</label>
           <div class="wrapper">
             <el-select v-model="settingStore.wordSoundType"
                        placeholder="请选择"
@@ -235,42 +159,7 @@ function importData(e) {
             <span>{{ settingStore.keyboardSoundVolume }}%</span>
           </div>
         </div>
-        <div class="line"></div>
-        <!--          <div class="row">-->
-        <!--            <label class="item-title">释义发音</label>-->
-        <!--            <div class="wrapper">-->
-        <!--              <el-switch v-model="settingStore.translateSound"-->
-        <!--                         inline-prompt-->
-        <!--                         active-text="开"-->
-        <!--                         inactive-text="关"-->
-        <!--              />-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <!--          <div class="row">-->
-        <!--            <label class="sub-title">音量</label>-->
-        <!--            <div class="wrapper">-->
-        <!--              <el-slider v-model="settingStore.translateSoundVolume"/>-->
-        <!--              <span>{{ settingStore.translateSoundVolume }}%</span>-->
-        <!--            </div>-->
-        <!--          </div>-->
-        <div class="line"></div>
-        <div class="row">
-          <label class="item-title">效果音（章节结算页烟花音效）</label>
-          <div class="wrapper">
-            <el-switch v-model="settingStore.effectSound"
-                       inline-prompt
-                       active-text="开"
-                       inactive-text="关"
-            />
-          </div>
-        </div>
-        <div class="row">
-          <label class="sub-title">音量</label>
-          <div class="wrapper">
-            <el-slider v-model="settingStore.effectSoundVolume"/>
-            <span>{{ settingStore.effectSoundVolume }}%</span>
-          </div>
-        </div>
+        
       </div>
       <div v-if="tabIndex === 1">
         <div class="row">
@@ -381,68 +270,9 @@ function importData(e) {
           默写时用下划线 _ 来显示每个字符。关闭后，用空格代替，用户将无法判断单词长度
         </div>
       </div>
-      <div class="body" v-if="tabIndex === 2">
-        <div class="row">
-          <label class="main-title">功能</label>
-          <div class="wrapper">快捷键(点击可修改)</div>
-        </div>
-        <div class="scroll">
-          <div class="row" v-for="item of Object.entries(settingStore.shortcutKeyMap)">
-            <label class="item-title">{{ $t(item[0]) }}</label>
-            <div class="wrapper" @click="editShortcutKey = item[0]">
-              <div class="set-key" v-if="editShortcutKey === item[0]">
-                <input :value="item[1]?item[1]:'未设置快捷键'" readonly type="text" @blur="editShortcutKey = ''">
-                <span @click.stop="editShortcutKey = ''">直接按键盘进行设置</span>
-              </div>
-              <div v-else>
-                <div v-if="item[1]">{{ item[1] }}</div>
-                <span v-else>未设置快捷键</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row footer">
-          <label class="item-title"></label>
-          <div class="wrapper">
-            <BaseButton @click="resetShortcutKeyMap">恢复默认</BaseButton>
-          </div>
-        </div>
-      </div>
-      <div v-if="tabIndex === 3">
-        <div class="row">
-          <div class="main-title">数据导出</div>
-        </div>
-        <div class="row">
-          <label class="sub-title">
-            目前用户的所有数据(自定义设置、自定义词典、练习进度等)
-            <b>仅保存在本地</b>
-            。如果您需要在不同的设备、浏览器或者其他非官方部署上使用 {{ APP_NAME }}， 您需要手动进行数据同步和保存。
-          </label>
-        </div>
-        <div class="row">
-          <BaseButton @click="exportData">数据导出</BaseButton>
-        </div>
-        <div class="row">
-          <div class="main-title">数据导入</div>
-        </div>
-        <div class="row">
-          <label class="sub-title">
-            请注意，导入数据将
-            <b style="color: red"> 完全覆盖 </b>
-            当前数据。请谨慎操作。
-          </label>
-        </div>
-        <div class="row">
-          <div class="import hvr-grow">
-            <BaseButton>数据导入</BaseButton>
-            <input type="file"
-                   accept="application/json"
-                   @change="importData">
-          </div>
-        </div>
+        
       </div>
     </div>
-  </div>
 </template>
 
 <style scoped lang="scss">

@@ -19,12 +19,10 @@ let length = $computed(() => {
   let len: any = ''
   if (props.dict.length) {
     len = props.dict.length
-    len += (isWord ? '词' : '篇')
+    len += '词'
   } else {
     if (isWord) {
       len = props.dict.originWords.length + '词'
-    } else {
-      len = props.dict.articles.length + '篇'
     }
   }
   return len
@@ -44,7 +42,6 @@ let length = $computed(() => {
       <div class="bottom">
         <div class="num">{{ length }}</div>
       </div>
-      <div class="pin" v-if="dict.type === DictType.article">文章</div>
     </template>
     <div v-else class="add" @click.stop="emit('add')">
       <Icon icon="fluent:add-20-filled" width="38" color="#929596"/>

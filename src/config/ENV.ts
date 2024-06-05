@@ -1,1 +1,0 @@
-export const GITHUB = 'https://github.com/zyronon/bbword'

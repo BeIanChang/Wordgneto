@@ -15,6 +15,7 @@ const store = useBaseStore()
 const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
 
+
 let wordData = $ref({
   words: [],
   index: -1

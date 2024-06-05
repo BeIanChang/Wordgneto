@@ -42,7 +42,6 @@ declare module 'vue' {
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     Empty: typeof import('./src/components/Empty.vue')['default']
-    FeedbackModal: typeof import('./src/components/toolbar/FeedbackModal.vue')['default']
     Fireworks: typeof import('./src/components/Fireworks.vue')['default']
     IconWrapper: typeof import('./src/components/IconWrapper.vue')['default']
     Input: typeof import('./src/components/Input.vue')['default']

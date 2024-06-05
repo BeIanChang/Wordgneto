@@ -85,8 +85,6 @@ export function checkAndUpgradeSaveSetting(val: string) {
                 }
                 return defaultSettingState
             } else {
-                //为了保持永远是最新的快捷键选项列表，但保留住用户的自定义设置，去掉无效的快捷键选项
-                //例: 2版本，可能有快捷键A。3版本没有了
                 for (const [key, value] of Object.entries(defaultSettingState.shortcutKeyMap)) {
                     if (state.shortcutKeyMap[key] !== undefined) defaultSettingState.shortcutKeyMap[key] = state.shortcutKeyMap[key]
                 }
@@ -109,14 +107,8 @@ export function shakeCommonDict(n: BaseState): BaseState {
     let data: BaseState = cloneDeep(n)
     data.myDictList.map((v: Dict) => {
         if (v.isCustom) {
-            if (v.type === DictType.article) {
-                v.articles.map(s => {
-                    delete s.sections
-                })
-            }
         } else {
             if (v.type === DictType.word) v.originWords = []
-            if (v.type === DictType.article) v.articles = []
             v.words = []
             v.chapterWords = []
         }

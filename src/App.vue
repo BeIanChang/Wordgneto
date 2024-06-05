@@ -9,8 +9,6 @@ import Backgorund from "@/components/Backgorund.vue"; // 引入背景组件
 import useTheme from "@/hooks/theme.ts"; // 引入主题 hook
 import * as localforage from "localforage"; // 引入 localforage 库，用于本地存储
 import SettingDialog from "@/components/dialog/SettingDialog.vue"; // 引入设置对话框组件
-import ArticleContentDialog from "@/components/dialog/ArticleContentDialog.vue"; // 引入文章内容对话框组件
-import CollectNotice from "@/components/CollectNotice.vue"; // 引入收集通知组件
 import { SAVE_SETTING_KEY, SAVE_DICT_KEY } from "@/utils/const.ts"; // 引入常量
 import { shakeCommonDict } from "@/utils"; // 引入工具函数
 import router from "@/router.ts"; // 引入路由
@@ -71,19 +69,12 @@ async function init() {
 // 组件挂载时调用初始化函数
 onMounted(() => {
   init();
-
-  if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-    console.log('当前设备是移动设备');
-    // router.replace('/mobile'); // 如果是移动设备，则跳转到移动端页面
-  }
 });
 </script>
 
 <template>
   <Backgorund/>
   <router-view/>
-  <CollectNotice/>
-  <ArticleContentDialog/>
   <SettingDialog/>
 </template>
 

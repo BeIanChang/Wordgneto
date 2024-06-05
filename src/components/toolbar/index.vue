@@ -2,17 +2,13 @@
 import Tooltip from "@/components/Tooltip.vue"
 import useTheme from "@/hooks/theme.ts"
 import {useBaseStore} from "@/stores/base.ts"
-import FeedbackModal from "@/components/toolbar/FeedbackModal.vue"
 
 import {Icon} from '@iconify/vue';
 
 import IconWrapper from "@/components/IconWrapper.vue";
 import {watch} from "vue"
-import VolumeSetting from "@/components/toolbar/VolumeSetting.vue";
-import RepeatSetting from "@/components/toolbar/RepeatSetting.vue";
 import TranslateSetting from "@/components/toolbar/TranslateSetting.vue";
 import {useSettingStore} from "@/stores/setting.ts";
-import {usePracticeStore} from "@/stores/practice.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {$ref} from "vue/macros";
 import {DictType, ShortcutKey} from "@/types.ts";
@@ -20,15 +16,11 @@ import ChapterName from "@/components/toolbar/ChapterName.vue";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
 import BaseIcon from "@/components/BaseIcon.vue";
 
-const {toggleTheme} = useTheme()
 const store = useBaseStore()
 const settingStore = useSettingStore()
 const runtimeStore = useRuntimeStore()
-const practiceStore = usePracticeStore()
 
-const showFeedbackModal = $ref(false)
 const headerRef = $ref<HTMLDivElement>(null)
-const moreOptionsRef = $ref<HTMLDivElement>(null)
 
 watch([() => settingStore.showToolbar, () => headerRef], n => {
   if (n[1]) {
@@ -38,23 +30,6 @@ watch([() => settingStore.showToolbar, () => headerRef], n => {
       let rect = n[1].getBoundingClientRect()
       n[1].style.marginTop = `-${rect.height}px`
     }
-  }
-})
-
-function toggle() {
-  if (settingStore.collapse) {
-    setTimeout(() => {
-      moreOptionsRef.style.overflow = 'unset'
-    }, 300)
-  } else {
-    moreOptionsRef.style.overflow = 'hidden'
-  }
-  settingStore.collapse = !settingStore.collapse
-}
-
-watch(() => store.load, n => {
-  if (!settingStore.collapse) {
-    moreOptionsRef.style.overflow = 'unset'
   }
 })
 
@@ -71,19 +46,11 @@ watch(() => store.load, n => {
           </div>
         </Tooltip>
         <ChapterName v-if="store.currentDict.type === DictType.word"/>
-        <div class="info-text" v-if="practiceStore.repeatNumber">
-          复习错词
-        </div>
+        
       </div>
 
       <div class="options" ref="moreOptionsRef">
         <div class="more" :class="settingStore.collapse && 'hide'">
-          <Tooltip title="收起图标">
-            <IconWrapper>
-              <Icon :icon="`system-uicons:window-collapse-${settingStore.collapse?'left':'right'}`"
-                    @click="toggle"/>
-            </IconWrapper>
-          </Tooltip>
 
           <Tooltip
               :title="`开关默写模式(快捷键：${settingStore.shortcutKeyMap[ShortcutKey.ToggleDictation]})`"
@@ -100,21 +67,6 @@ watch(() => store.load, n => {
 
           <TranslateSetting/>
 
-          <VolumeSetting/>
-
-          <RepeatSetting/>
-
-          <!--                    <Add/>-->
-
-          <BaseIcon
-              @click="emitter.emit(EventKey.openDictModal,'my')"
-              title="添加"
-              icon="ic:outline-cloud-upload"/>
-
-          <BaseIcon
-              @click="showFeedbackModal = true"
-              title="反馈"
-              icon="ph:bug-beetle"/>
         </div>
 
         <div class="with-bg anim">
@@ -138,7 +90,6 @@ watch(() => store.load, n => {
             color="#999"/>
     </Tooltip>
   </header>
-  <FeedbackModal v-if="showFeedbackModal" @close="showFeedbackModal = false"/>
 
 </template>
 

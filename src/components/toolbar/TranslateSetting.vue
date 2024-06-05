@@ -33,10 +33,6 @@ const TranslateEngine = [
   {value: 'youdao', label: '有道'},
 ]
 
-function save() {
-
-}
-
 </script>
 
 <template>

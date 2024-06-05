@@ -2,8 +2,6 @@
 import {Icon} from "@iconify/vue";
 import {$ref} from "vue/macros";
 import IconWrapper from "@/components/IconWrapper.vue";
-import Tooltip from "@/components/Tooltip.vue";
-import {ShortcutKey} from "@/types.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 
 const props = withDefaults(defineProps<{

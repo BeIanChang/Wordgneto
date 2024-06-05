@@ -1,10 +1,6 @@
 <script setup lang="ts">
 
-import Tooltip from "@/components/Tooltip.vue";
-import IconWrapper from "@/components/IconWrapper.vue";
-import {Icon} from "@iconify/vue";
 import BaseIcon from "@/components/BaseIcon.vue";
-import {useWordOptions} from "@/hooks/dict.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {ShortcutKey} from "@/types.ts";
 
@@ -52,15 +48,6 @@ const settingStore = useSettingStore()
         @click="$emit('toggleCollect')"
         :title="`取消收藏(快捷键：${settingStore.shortcutKeyMap[ShortcutKey.ToggleCollect]})`"
         icon="ph:star-fill"/>
-
-    <Tooltip
-        :title="`跳过(快捷键：${settingStore.shortcutKeyMap[ShortcutKey.Next]})`"
-    >
-      <IconWrapper>
-        <Icon icon="icon-park-outline:go-ahead" class="menu"
-              @click="emit('skip')"/>
-      </IconWrapper>
-    </Tooltip>
   </div>
 </template>
 

@@ -6,18 +6,17 @@ export const SoundFileOptions = [
     {value: '笔记本键盘', label: '笔记本键盘'},
 ]
 
-export const APP_NAME = 'Typing Word'
+export const APP_NAME = 'Wordgneto'
 
 export const SAVE_DICT_KEY = {
-    key: 'typing-word-dict',
+    key: 'wordgneto-dict',
     version: 3
 }
 export const SAVE_SETTING_KEY = {
-    key: 'typing-word-setting',
-    oldKey: 'typing-word-config',
+    key: 'wordgneto-setting',
     version: 8
 }
 export const EXPORT_DATA_KEY = {
-    key: 'typing-word-export',
+    key: 'wordgneto-export',
     version: 1
 }

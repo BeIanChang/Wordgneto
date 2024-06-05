@@ -6,7 +6,6 @@ import {ElMessageBox} from "element-plus";
 //   export default src
 // }
 
-declare const LATEST_COMMIT_HASH: string
 
 declare module '*.mp3' {
   const src: string;

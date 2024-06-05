@@ -31,14 +31,11 @@ export interface SettingState {
   autoNext: boolean
   dictationShowWordLength: boolean//默写时显示单词长度，即用下划线 _ 来显示每个字符
   fontSize: {
-    articleForeignFontSize: number,
-    articleTranslateFontSize: number,
     wordForeignFontSize: number,
     wordTranslateFontSize: number,
   },
   showPanel: boolean,
   theme: string,
-  collapse: boolean,
   chapterWordNumber: number,
   shortcutKeyMap: Record<string, string>,
   first: boolean
@@ -71,8 +68,6 @@ export const DefaultSettingState = (): SettingState => ({
   ignoreCase: true,
   allowWordTip: true,
   fontSize: {
-    articleForeignFontSize: 48,
-    articleTranslateFontSize: 20,
     wordForeignFontSize: 48,
     wordTranslateFontSize: 20,
   },
@@ -80,7 +75,6 @@ export const DefaultSettingState = (): SettingState => ({
   autoNext: true,
   dictationShowWordLength: true,
   theme: 'auto',
-  collapse: false,
   chapterWordNumber: DefaultChapterWordNumber,
   shortcutKeyMap: cloneDeep(DefaultShortcutKeyMap),
   first: true,

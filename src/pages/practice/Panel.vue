@@ -8,23 +8,14 @@ import PopConfirm from "@/components/PopConfirm.vue"
 import BaseButton from "@/components/BaseButton.vue";
 import {useSettingStore} from "@/stores/setting.ts";
 import Close from "@/components/icon/Close.vue";
-import Empty from "@/components/Empty.vue";
-import {useArticleOptions, useWordOptions} from "@/hooks/dict.ts";
-import {Icon} from "@iconify/vue";
+import {useWordOptions} from "@/hooks/dict.ts";
 import Tooltip from "@/components/Tooltip.vue";
-import IconWrapper from "@/components/IconWrapper.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
-import {useRouter} from "vue-router";
-import {useRuntimeStore} from "@/stores/runtime.ts";
-import {cloneDeep} from "lodash-es";
 import WordList from "@/components/list/WordList.vue";
-import ArticleList from "@/components/list/ArticleList.vue";
 import Slide from "@/components/Slide.vue";
 
-const router = useRouter()
 const store = useBaseStore()
-const runtimeStore = useRuntimeStore()
 const settingStore = useSettingStore()
 let tabIndex = $ref(0)
 provide('tabIndex', computed(() => tabIndex))
@@ -57,29 +48,14 @@ const {
   toggleWordCollect,
 } = useWordOptions()
 
-const {
-  toggleArticleCollect
-} = useArticleOptions()
-
-function addCollect() {
-  runtimeStore.editDict = cloneDeep(store.collect)
-  router.push({path: '/dict', query: {type: 'addWordOrArticle'}})
-}
-
-function addSimple() {
-  runtimeStore.editDict = cloneDeep(store.simple)
-  router.push({path: '/dict', query: {type: 'addWordOrArticle'}})
-}
 
 const showCollectToggleButton = $computed(() => {
   if (store.currentDict.type === DictType.collect) {
     if (store.current.practiceType !== practiceType) {
-      return (practiceType === DictType.word && store.collect.words.length) ||
-          (practiceType === DictType.article && store.collect.articles.length)
+      return (practiceType === DictType.word && store.collect.words.length)
     }
   } else {
-    return (practiceType === DictType.word && store.collect.words.length) ||
-        (practiceType === DictType.article && store.collect.articles.length)
+    return (practiceType === DictType.word && store.collect.words.length)
   }
   return false
 })
@@ -110,16 +86,10 @@ const showCollectToggleButton = $computed(() => {
             <div class="list-header">
               <div class="left">
                 <el-radio-group v-model="practiceType">
-                  <el-radio-button border :label="DictType.word">单词</el-radio-button>
-                  <el-radio-button border :label="DictType.article">文章</el-radio-button>
                 </el-radio-group>
                 <div class="dict-name" v-if="practiceType === DictType.word && store.collect.words.length">
                   {{ store.collect.words.length }}个单词
                 </div>
-                <div class="dict-name" v-if="practiceType === DictType.article && store.collect.articles.length">
-                  {{ store.collect.articles.length }}篇文章
-                </div>
-                <BaseIcon icon="fluent:add-12-regular" title="添加" @click="addCollect"/>
               </div>
               <template v-if="showCollectToggleButton">
                 <PopConfirm
@@ -145,20 +115,6 @@ const showCollectToggleButton = $computed(() => {
               </WordList>
               <Empty v-else/>
             </template>
-            <template v-else>
-              <ArticleList
-                  v-if="store.collect.articles.length"
-                  :list="store.collect.articles">
-                <template v-slot:suffix="{item,index}">
-                  <BaseIcon
-                      class="del"
-                      @click="toggleArticleCollect(item)"
-                      title="移除"
-                      icon="solar:trash-bin-minimalistic-linear"/>
-                </template>
-              </ArticleList>
-              <Empty v-else/>
-            </template>
           </div>
         </div>
         <div class="slide-item">
@@ -166,7 +122,6 @@ const showCollectToggleButton = $computed(() => {
             <div class="list-header">
               <div class="left">
                 <div class="dict-name">总词数：{{ store.simple.words.length }}</div>
-                <BaseIcon icon="fluent:add-12-regular" title="添加" @click="addSimple"/>
               </div>
               <template v-if="store.currentDict.type !== DictType.simple && store.simple.words.length">
                 <PopConfirm

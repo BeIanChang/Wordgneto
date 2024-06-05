@@ -5,8 +5,8 @@ import { $computed, $ref } from "vue/macros";
 import { useBaseStore } from "@/stores/base.ts";
 import { usePracticeStore } from "@/stores/practice.ts";
 import { useSettingStore } from "@/stores/setting.ts";
-import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio, useTTsPlayAudio } from "@/hooks/sound.ts";
 import { emitter, EventKey } from "@/utils/eventBus.ts";
+import { usePlayBeep, usePlayCorrect, usePlayKeyboardAudio, usePlayWordAudio} from "@/hooks/sound.ts";
 import { cloneDeep } from "lodash-es";
 import { onUnmounted, watch, onMounted } from "vue";
 import Tooltip from "@/components/Tooltip.vue";
@@ -24,6 +24,11 @@ const emit = defineEmits<{
   wrong: []
 }>()
 
+const playBeep = usePlayBeep()
+const playCorrect = usePlayCorrect()
+const playKeyboardAudio = usePlayKeyboardAudio()
+const playWordAudio = usePlayWordAudio()
+
 let input = $ref('')
 let wrong = $ref('')
 let showFullWord = $ref(false)
@@ -33,13 +38,7 @@ let inputLock = false
 let wordRepeatCount = 0
 const settingStore = useSettingStore()
 
-const playBeep = usePlayBeep()
-const playCorrect = usePlayCorrect()
-const playKeyboardAudio = usePlayKeyboardAudio()
-const playWordAudio = usePlayWordAudio()
-const ttsPlayAudio = useTTsPlayAudio()
 const volumeIconRef: any = $ref()
-const volumeTranslateIconRef: any = $ref()
 
 let displayWord = $computed(() => {
   return props.word.name.slice(input.length + wrong.length)
@@ -115,7 +114,6 @@ async function onTyping(e: KeyboardEvent) {
   }
 
   if (isWordRight) {
-    playCorrect()
     if (settingStore.repeatCount == 100) {
       if (settingStore.repeatCustomCount <= wordRepeatCount + 1) {
         if (settingStore.autoNext) {
@@ -145,7 +143,7 @@ async function onTyping(e: KeyboardEvent) {
 }
 
 function del() {
-  playKeyboardAudio()
+   playKeyboardAudio()
 
   if (wrong) {
     wrong = ''
@@ -183,17 +181,7 @@ defineExpose({del, showWord, hideWord, play})
     >
       <div class="translate-item" v-for="(v,i) in word.trans">
         <span>{{ v }}</span>
-        <!--        <div class="volumeIcon">-->
-        <!--          <Tooltip-->
-        <!--              v-if="i === word.trans.length - 1"-->
-        <!--              :title="`发音(快捷键：${settingStore.shortcutKeyMap[ShortcutKey.PlayTranslatePronunciation]})`"-->
-        <!--          >-->
-        <!--            <VolumeIcon-->
-        <!--                ref="volumeTranslateIconRef"-->
-        <!--                :simple="true"-->
-        <!--                :cb="()=>ttsPlayAudio(word.trans.join(';'))"/>-->
-        <!--          </Tooltip>-->
-        <!--        </div>-->
+               
       </div>
     </div>
     <div class="word-wrapper">

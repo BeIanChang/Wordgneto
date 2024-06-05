@@ -38,10 +38,7 @@ function groupByDictTags(dictList: DictResource[]) {
 
 const groupByTranslateLanguage = $computed(() => {
   let data: any
-  if (currentLanguage === 'article') {
-    let articleList = dictionaryResources.filter(v => v.type === 'article')
-    data = groupBy(articleList, 'translateLanguage')
-  } else if (currentLanguage === 'my') {
+  if (currentLanguage === 'my') {
     data = {
       common: store.myDictList.concat([{id: '',} as any])
     }

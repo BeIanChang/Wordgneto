@@ -9,7 +9,6 @@ import {Icon} from '@iconify/vue';
 import {ActivityCalendar} from "vue-activity-calendar";
 import "vue-activity-calendar/style.css";
 import WordListDialog from "@/components/dialog/WordListDialog.vue";
-import {isArticle} from "@/hooks/article.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
@@ -17,11 +16,9 @@ import Slide from "@/components/Slide.vue";
 import Empty from "@/components/Empty.vue";
 import BaseIcon from "@/components/BaseIcon.vue";
 import Dialog from "@/components/dialog/Dialog.vue";
-import EditBatchArticleModal from "@/components/article/EditBatchArticleModal.vue";
 import {nanoid} from "nanoid";
 import DictListPanel from "@/components/DictListPanel.vue";
 import {useRouter} from "vue-router";
-import ArticleList from "@/components/list/ArticleList.vue";
 import BaseList from "@/components/list/BaseList.vue";
 import {MessageBox} from "@/utils/MessageBox.tsx";
 
@@ -38,9 +35,6 @@ let chapterWordNumber = $ref(0)
 let toggleLoading = $ref(false)
 
 const activeId = $computed(() => {
-  if (dictIsArticle) {
-    return runtimeStore.editDict.articles?.[runtimeStore.editDict.chapterIndex].id ?? ''
-  }
   return ''
 })
 
@@ -66,7 +60,7 @@ async function selectDict(val: { dict: DictResource | Dict, index: number }) {
   } else {
     //如果不是自定义词典，并且有url地址才去下载
     if (!runtimeStore.editDict.isCustom && runtimeStore.editDict.url) {
-      let url = `./dicts/${runtimeStore.editDict.language}/${runtimeStore.editDict.type}/${runtimeStore.editDict.translateLanguage}/${runtimeStore.editDict.url}`;
+      let url = `./dicts/${runtimeStore.editDict.url}`;
       if (runtimeStore.editDict.type === DictType.word) {
         if (!runtimeStore.editDict.originWords.length) {
           let r = await fetch(url)
@@ -78,18 +72,6 @@ async function selectDict(val: { dict: DictResource | Dict, index: number }) {
           changeSort(runtimeStore.editDict.sort, false)
         } else {
           runtimeStore.editDict.length = runtimeStore.editDict.words.length
-        }
-      }
-      if (runtimeStore.editDict.type === DictType.article) {
-        if (!runtimeStore.editDict.articles.length) {
-          let r = await fetch(url)
-          let v = await r.json()
-          v.map(s => {
-            s.id = nanoid(6)
-          })
-          runtimeStore.editDict.articles = cloneDeep(v)
-        } else {
-          runtimeStore.editDict.length = runtimeStore.editDict.articles.length
         }
       }
     }
@@ -109,10 +91,6 @@ function changeDict() {
   store.changeDict(runtimeStore.editDict)
   ElMessage.success('切换成功')
 }
-
-const dictIsArticle = $computed(() => {
-  return isArticle(runtimeStore.editDict.type)
-})
 
 function showAllWordModal() {
   emitter.emit(EventKey.openWordListModal, {
@@ -179,11 +157,9 @@ onMounted(() => {
       selectDict({dict: store.currentDict, index: 0})
     }
     if (type === "list") {
-      // currentLanguage = 'en'
       step = 0
     }
     if (type === "my") {
-      // currentLanguage = 'my'
       step = 0
     }
     show = true
@@ -198,13 +174,6 @@ function showWordListModal(val: { item: Word, index: number }) {
   })
 }
 
-function handleChangeArticleChapterIndex(val: any) {
-  let rIndex = runtimeStore.editDict.articles.findIndex(v => v.id === val.item.id)
-  if (rIndex > -1) {
-    runtimeStore.editDict.chapterIndex = rIndex
-  }
-}
-
 </script>
 
 <template>
@@ -215,7 +184,6 @@ function handleChangeArticleChapterIndex(val: any) {
     <div id="DictDialog">
       <Slide :slide-count="2" :step="step">
         <DictListPanel
-            @add="option('addDict')"
             @select-dict="selectDict"
         />
         <div class="dict-detail-page">
@@ -223,7 +191,7 @@ function handleChangeArticleChapterIndex(val: any) {
             <div class="left" @click.stop="step = 0">
               <Icon icon="octicon:arrow-left-24" class="go" width="20"/>
               <div class="title">
-                词典详情
+                词典管理
               </div>
             </div>
             <Icon @click="close"
@@ -234,43 +202,20 @@ function handleChangeArticleChapterIndex(val: any) {
           <div class="detail">
             <div class="page-content">
               <div class="left-column">
-                <BaseIcon
-                    v-if="![DictType.collect,DictType.wrong,DictType.simple].includes(runtimeStore.editDict.type)"
-                    class="edit-icon"
-                    title="编辑词典"
-                    icon="tabler:edit"
-                    @click='option("editDict")'
-                />
                 <div class="name">{{ runtimeStore.editDict.name }}</div>
                 <div class="desc">{{ runtimeStore.editDict.description }}</div>
                 <div class="text flex align-center gap10">
-                  <div v-if="dictIsArticle">总文章：{{ runtimeStore.editDict.articles.length }}篇
-                  </div>
-                  <div v-else>总词汇：
+                  <div>总词汇：
                     <span class="count" @click="showAllWordModal">{{
                         runtimeStore.editDict.originWords.length
                       }}词</span>
                   </div>
-                  <BaseIcon icon="mi:add"
-                            @click='option("addWordOrArticle")'
-                            :title="`添加${dictIsArticle?'文章':'单词'}`"
-                  />
                 </div>
-                <template v-if="false">
-                  <div class="text">开始日期：-</div>
-                  <div class="text">花费时间：-</div>
-                  <div class="text">累积错误：-</div>
-                  <div class="text">进度：
-                    <el-progress :percentage="0"
-                                 :stroke-width="8"
-                                 :show-text="false"/>
-                  </div>
-                </template>
               </div>
               <div class="center-column">
                 <div class="common-title">学习设置</div>
                 <div class="setting">
-                  <template v-if="!dictIsArticle">
+                  <template>
                     <div class="row">
                       <div class="label">每章单词数</div>
                       <el-slider
@@ -313,7 +258,7 @@ function handleChangeArticleChapterIndex(val: any) {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="label">{{ dictIsArticle ? '句子' : '单词' }}发音</div>
+                    <div class="label">单词发音</div>
                     <div class="option">
                       <el-radio-group v-model="settingStore.wordSoundType">
                         <el-radio label="us" size="large">美音</el-radio>
@@ -322,7 +267,7 @@ function handleChangeArticleChapterIndex(val: any) {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="label">{{ dictIsArticle ? '句子' : '单词' }}自动发音</div>
+                    <div class="label">单词自动发音</div>
                     <div class="option">
                       <el-switch v-model="settingStore.wordSound"
                                  inline-prompt
@@ -353,60 +298,10 @@ function handleChangeArticleChapterIndex(val: any) {
                   </div>
                 </div>
               </div>
-              <div class="right-column">
-                <div class="common-title">
-                  <span>{{ dictIsArticle ? '文章' : '章节' }}列表</span>
-                  <BaseIcon
-                      icon="fluent:notepad-edit-20-regular"
-                      @click='option("detail")'
-                      style="position: absolute;right: 20rem;"
-                      :title="`管理${dictIsArticle?'文章':'章节'}`"
-                  />
-                </div>
-                <div class="list-content">
-                  <template v-if="dictIsArticle">
-                    <ArticleList
-                        v-if="runtimeStore.editDict.articles.length"
-                        :isActive="false"
-                        v-loading="loading"
-                        :show-border="true"
-                        @title="(val:any) => emitter.emit(EventKey.openArticleContentModal,val.item)"
-                        @click="handleChangeArticleChapterIndex"
-                        :active-id="activeId"
-                        :list="runtimeStore.editDict.articles">
-                      <template v-slot:prefix="{item,index}">
-                        <input type="radio" :checked="activeId === item.id">
-                      </template>
-                    </ArticleList>
-                    <Empty v-else/>
-                  </template>
-                  <template v-else>
-                    <BaseList
-                        ref="chapterListRef"
-                        v-if="chapterList2.length"
-                        :list="chapterList2"
-                        :show-border="true"
-                        @click="(val:any) => runtimeStore.editDict.chapterIndex = val.index"
-                        :active-index="runtimeStore.editDict.chapterIndex"
-                    >
-                      <template v-slot:prefix="{ item, index }">
-                        <input type="radio" :checked="runtimeStore.editDict.chapterIndex === item.id">
-                      </template>
-                      <template v-slot="{ item, index }">
-                        <div class="item-title" @click.stop="showWordListModal({item,index})">
-                          <span>第{{ item.id + 1 }}章</span>&nbsp;&nbsp;&nbsp;
-                          <span>{{ runtimeStore.editDict.chapterWords[item.id]?.length }}词</span>
-                        </div>
-                      </template>
-                    </BaseList>
-                    <Empty v-else/>
-                  </template>
-                </div>
                 <div class="footer">
                   <!--            <BaseButton @click="step = 0">导出</BaseButton>-->
                   <BaseButton @click="close">关闭</BaseButton>
                   <BaseButton :loading="toggleLoading" @click="changeDict">切换</BaseButton>
-                </div>
               </div>
             </div>
           </div>
@@ -415,7 +310,6 @@ function handleChangeArticleChapterIndex(val: any) {
     </div>
   </Dialog>
   <WordListDialog/>
-  <EditBatchArticleModal/>
 </template>
 
 <style scoped lang="scss">

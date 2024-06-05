@@ -44,64 +44,12 @@ export enum DictType {
   simple = 'simple',
   wrong = 'wrong',
   word = 'word',
-  article = 'article',
-}
-
-export const DefaultArticleWord: ArticleWord = {
-  name: '',
-  usphone: '',
-  ukphone: '',
-  trans: [],
-  nextSpace: true,
-  isSymbol: false,
-  symbolPosition: ''
-}
-
-export interface ArticleWord extends Word {
-  nextSpace: boolean,
-  isSymbol: boolean,
-  symbolPosition: 'start' | 'end' | '',
-}
-
-export interface Sentence {
-  text: string,
-  translate: string,
-  words: ArticleWord[]
 }
 
 export enum TranslateType {
   custom = 'custom',
   network = 'network',
   none = 'none'
-}
-
-export interface Article {
-  id: string,
-  title: string,
-  titleTranslate: string,
-  text: string,
-  textCustomTranslate: string,
-  textCustomTranslateIsFormat: boolean,//翻译是否格式化
-  textNetworkTranslate: string,
-  newWords: Word[],
-  textAllWords: string[],
-  sections: Sentence[][],
-  useTranslateType: TranslateType
-}
-
-export const DefaultArticle: Article = {
-  // id: nanoid(6),
-  id: '',
-  title: '',
-  titleTranslate: '',
-  text: '',
-  textCustomTranslate: '',
-  textNetworkTranslate: '',
-  textCustomTranslateIsFormat: false,
-  newWords: [],
-  textAllWords: [],
-  sections: [],
-  useTranslateType: TranslateType.custom
 }
 
 export interface Statistics {
@@ -144,7 +92,6 @@ export const ShortcutKeyMap = {
 
 export enum ShortcutKey {
   ShowWord = 'ShowWord',
-  EditArticle = 'EditArticle',
   Next = 'Next',
   Previous = 'Previous',
   ToggleSimple = 'ToggleSimple',
@@ -154,7 +101,6 @@ export enum ShortcutKey {
   RepeatChapter = 'RepeatChapter',
   DictationChapter = 'DictationChapter',
   PlayWordPronunciation = 'PlayWordPronunciation',
-  // PlayTranslatePronunciation = 'PlayTranslatePronunciation',
   ToggleShowTranslate = 'ToggleShowTranslate',
   ToggleDictation = 'ToggleDictation',
   OpenSetting = 'OpenSetting',
@@ -165,38 +111,28 @@ export enum ShortcutKey {
 }
 
 export const DefaultShortcutKeyMap = {
-  [ShortcutKey.EditArticle]: 'Ctrl+E',
-  [ShortcutKey.ShowWord]: 'Escape',
-  [ShortcutKey.Previous]: 'Alt+⬅',
-  [ShortcutKey.Next]: 'Tab',
-  [ShortcutKey.ToggleSimple]: '`',
-  [ShortcutKey.ToggleCollect]: 'Enter',
-  [ShortcutKey.PreviousChapter]: 'Ctrl+⬅',
-  [ShortcutKey.NextChapter]: 'Ctrl+➡',
-  [ShortcutKey.RepeatChapter]: 'Ctrl+Enter',
-  [ShortcutKey.DictationChapter]: 'Alt+Enter',
-  [ShortcutKey.PlayWordPronunciation]: 'Ctrl+P',
-  // [ShortcutKey.PlayTranslatePronunciation]: 'Ctrl+O',
-  [ShortcutKey.ToggleShowTranslate]: 'Ctrl+Z',
-  [ShortcutKey.ToggleDictation]: 'Ctrl+I',
-  [ShortcutKey.OpenSetting]: 'Ctrl+S',
-  [ShortcutKey.ToggleTheme]: 'Ctrl+Q',
-  [ShortcutKey.OpenDictDetail]: 'Ctrl+J',
-  [ShortcutKey.ToggleConciseMode]: 'Ctrl+M',
-  [ShortcutKey.TogglePanel]: 'Ctrl+L',
-}
+    [ShortcutKey.ShowWord]: 'Escape', // 显示当前单词
+    [ShortcutKey.Previous]: 'Alt+⬅', // 上一个单词
+    [ShortcutKey.Next]: 'Tab', // 下一个单词
+    [ShortcutKey.ToggleSimple]: '`', // 切换到简单模式
+    [ShortcutKey.ToggleCollect]: 'Enter', // 收藏单词
+    [ShortcutKey.PreviousChapter]: 'Ctrl+⬅', // 上一章
+    [ShortcutKey.NextChapter]: 'Ctrl+➡', // 下一章
+    [ShortcutKey.RepeatChapter]: 'Ctrl+Enter', // 重复当前章节
+    [ShortcutKey.DictationChapter]: 'Alt+Enter', // 切换到听写模式
+    [ShortcutKey.PlayWordPronunciation]: 'Ctrl+P', // 播放单词发音
+    [ShortcutKey.ToggleShowTranslate]: 'Ctrl+Z', // 显示/隐藏翻译
+    [ShortcutKey.ToggleDictation]: 'Ctrl+I', // 显示/隐藏听写模式
+    [ShortcutKey.OpenSetting]: 'Ctrl+S', // 打开设置
+    [ShortcutKey.ToggleTheme]: 'Ctrl+Q', // 切换主题
+    [ShortcutKey.OpenDictDetail]: 'Ctrl+J', // 打开词典详情
+    [ShortcutKey.ToggleConciseMode]: 'Ctrl+M', // 切换简洁模式
+    [ShortcutKey.TogglePanel]: 'Ctrl+L', // 显示/隐藏面板
+  }
+  
 
-
-export enum TranslateEngine {
-  Baidu = 0,
-}
 
 export const languageCategoryOptions = [
-  {id: 'article', name: '文章', flag: bookFlag},
-  {id: 'en', name: '英语', flag: enFlag},
-  // {id: 'ja', name: '日语', flag: jpFlag},
-  // {id: 'de', name: '德语', flag: deFlag},
-  {id: 'code', name: 'Code', flag: codeFlag},
   {id: 'my', name: '我的', flag: myFlag},
 ]
 
@@ -212,7 +148,6 @@ export const DefaultDict: Dict = {
   residueWords: [],//未分配单词
   chapterIndex: 0,//章节下标
   wordIndex: 0,//单词下标
-  articles: [],
   statistics: [],
   isCustom: false,
   length: 0,
@@ -238,7 +173,6 @@ export interface Dict {
   residueWords: Word[],
   chapterIndex: number,//章节下标
   wordIndex: number,//单词下标
-  articles: Article[],
   statistics: Statistics[],
   isCustom: boolean,
   length: number,
@@ -250,15 +184,5 @@ export interface Dict {
   type: DictType
   translateLanguage: TranslateLanguageType
   url: string,
-}
-
-export interface ArticleItem {
-  item: Article,
-  index: number
-}
-
-export interface WordItem {
-  item: Article,
-  index: number
 }
 

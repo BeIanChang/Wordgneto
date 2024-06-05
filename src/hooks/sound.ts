@@ -38,54 +38,6 @@ export function useSound(audioSrcList?: string[], audioFileLength?: number) {
   return {play, setAudio}
 }
 
-
-export function usePlayKeyboardAudio() {
-  const settingStore = useSettingStore()
-  const {play, setAudio} = useSound()
-
-  watchEffect(() => {
-    if (!SoundFileOptions.find(v => v.label === settingStore.keyboardSoundFile)) {
-      settingStore.keyboardSoundFile = '机械键盘2'
-    }
-    let urlList = getAudioFileUrl(settingStore.keyboardSoundFile)
-    setAudio(urlList, urlList.length === 1 ? 3 : 1)
-  })
-
-  function playAudio() {
-    if (settingStore.keyboardSound) {
-      play(settingStore.keyboardSoundVolume)
-    }
-  }
-
-  return playAudio
-}
-
-export function usePlayBeep() {
-  const settingStore = useSettingStore()
-  const {play} = useSound([beep], 1)
-
-  function playAudio() {
-    if (settingStore.effectSound) {
-      play(settingStore.effectSoundVolume)
-    }
-  }
-
-  return playAudio
-}
-
-export function usePlayCorrect() {
-  const settingStore = useSettingStore()
-  const {play} = useSound([correct], 1)
-
-  function playAudio() {
-    if (settingStore.effectSound) {
-      play(settingStore.effectSoundVolume)
-    }
-  }
-
-  return playAudio
-}
-
 export function usePlayWordAudio() {
   const settingStore = useSettingStore()
   const audio = $ref(new Audio())
@@ -104,33 +56,58 @@ export function usePlayWordAudio() {
   return playAudio
 }
 
-export function useTTsPlayAudio() {
-  let isPlay = $ref(false)
-
-  function play(text: string) {
-    // if (isPlay) {
-    //   isPlay = false
-    //   return window.speechSynthesis.pause();
-    // }
-    let msg = new SpeechSynthesisUtterance();
-    msg.text = text
-    msg.rate = 1;
-    msg.pitch = 1;
-    // msg.lang = 'en-US';
-    msg.lang = 'zh-CN';
-    isPlay = true
-    window.speechSynthesis.speak(msg);
-    console.log('text', text)
-
-  }
-
-  return play
-}
 
 export function usePlayAudio(url: string) {
   new Audio(url).play().then(r => void 0)
 }
 
+export function usePlayKeyboardAudio() {
+    const settingStore = useSettingStore()
+    const {play, setAudio} = useSound()
+  
+    watchEffect(() => {
+      if (!SoundFileOptions.find(v => v.label === settingStore.keyboardSoundFile)) {
+        settingStore.keyboardSoundFile = '机械键盘2'
+      }
+      let urlList = getAudioFileUrl(settingStore.keyboardSoundFile)
+      setAudio(urlList, urlList.length === 1 ? 3 : 1)
+    })
+  
+    function playAudio() {
+      if (settingStore.keyboardSound) {
+        play(settingStore.keyboardSoundVolume)
+      }
+    }
+  
+    return playAudio
+  }
+  
+  export function usePlayBeep() {
+    const settingStore = useSettingStore()
+    const {play} = useSound([beep], 1)
+  
+    function playAudio() {
+      if (settingStore.effectSound) {
+        play(settingStore.effectSoundVolume)
+      }
+    }
+  
+    return playAudio
+  }
+  
+  export function usePlayCorrect() {
+    const settingStore = useSettingStore()
+    const {play} = useSound([correct], 1)
+  
+    function playAudio() {
+      if (settingStore.effectSound) {
+        play(settingStore.effectSoundVolume)
+      }
+    }
+  
+    return playAudio
+  }
+  
 export function getAudioFileUrl(name: string) {
   if (name === '机械键盘') {
     return [

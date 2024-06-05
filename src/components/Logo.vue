@@ -24,7 +24,7 @@ function goHome(){
 
   img {
     cursor: pointer;
-    height: 35rem;
+    height: 40rem;
   }
 }
 </style>

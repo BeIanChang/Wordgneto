@@ -55,44 +55,23 @@ export const DefaultBaseState = (): BaseState => ({
       tags: ['大学英语'],
       url: 'CET4_T.json',
       length: 2607,
-      translateLanguage: 'common',
-      language: 'en',
       type: DictType.word
     },
-    // {
-    //   ...cloneDeep(DefaultDict),
-    //   id: 'article_nce2',
-    //   name: "新概念英语2-课文",
-    //   description: '新概念英语2-课文',
-    //   category: '英语学习',
-    //   tags: ['新概念英语'],
-    //   url: 'NCE_2.json',
-    //   translateLanguage: 'common',
-    //   language: 'en',
-    //   type: DictType.article,
-    //   resourceId: 'article_nce2',
-    //   length: 96
-    // },
-    // {
-    //   ...cloneDeep(DefaultDict),
-    //   id: 'nce-new-2',
-    //   name: '新概念英语(新版)-2',
-    //   description: '新概念英语新版第二册',
-    //   category: '青少年英语',
-    //   tags: ['新概念英语'],
-    //   url: 'nce-new-2.json',
-    //   translateLanguage: 'common',
-    //   language: 'en',
-    //   type: DictType.word,
-    //   resourceId: 'nce-new-2',
-    //   length: 862
-    // },
+    {
+        ...cloneDeep(DefaultDict),
+        id: 'cet6',
+        name: 'CET-6',
+        description: '大学英语六级词库',
+        category: '中国考试',
+        tags: ['大学英语'],
+        url: 'CET6_T.json',
+        length: 2345,
+        type: DictType.word
+      },
   ],
   collectDictIds: [],
   current: {
     index: 3,
-    // dictType: DictType.article,
-    // index: 0,
     practiceType: DictType.word,
   },
   simpleWords: [
@@ -104,51 +83,6 @@ export const DefaultBaseState = (): BaseState => ({
   ],
   load: false
 })
-
-// words: [
-//   {
-//     "name": "cancelcancelcancelcancelcancelcancelcancelcancel",
-//     "trans": ['取消取消取消取消取消取消取消取消取消取消取消取消取消取消取消取消'],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-//   {
-//     "name": "prepare",
-//     "trans": [],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-//   {
-//     "name": "half",
-//     "trans": [],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-//   {
-//     "name": "spacious",
-//     "trans": [],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-//   {
-//     "name": "analyse",
-//     "trans": [],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-//   {
-//     "name": "costing",
-//     "trans": [],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-//   {
-//     "name": "nowadays",
-//     "trans": [],
-//     "usphone": "",
-//     "ukphone": ""
-//   },
-// ],
 
 export const useBaseStore = defineStore('base', {
   state: (): BaseState => {
@@ -170,15 +104,6 @@ export const useBaseStore = defineStore('base', {
     skipWordNamesWithSimpleWords() {
       return this.simple.originWords.map(v => v.name.toLowerCase()).concat(this.simpleWords)
     },
-    isArticle(state: BaseState): boolean {
-      //如果是收藏时，特殊判断
-      if (this.currentDict.type === DictType.collect) {
-        return state.current.practiceType === DictType.article
-      }
-      return [
-        DictType.article,
-      ].includes(this.currentDict.type)
-    },
     currentDict(): Dict {
       return this.myDictList[this.current.index]
     },
@@ -189,9 +114,6 @@ export const useBaseStore = defineStore('base', {
       let title = ''
       switch (this.currentDict.type) {
         case DictType.collect:
-          if (state.current.practiceType === DictType.article) {
-            return `第${this.currentDict.chapterIndex + 1}章`
-          }
         case DictType.wrong:
         case DictType.simple:
           return this.currentDict.name
@@ -203,96 +125,52 @@ export const useBaseStore = defineStore('base', {
   },
   actions: {
     setState(obj: any) {
-      //这样不会丢失watch的值的引用
+      //这样不会丢失watch值的引用
       merge(this, obj)
     },
     async init(outData?: any) {
-      return new Promise(async resolve => {
+      return new Promise(async resolve => { //这里是异步的,所以要返回一个promise
         try {
-          if (outData) {
+          if (outData) { //如果有外部数据，就用外部数据
             this.setState(outData)
-          } else {
+          } else { //否则就从本地存储中读取数据
             let configStr: string = await localforage.getItem(SAVE_DICT_KEY.key)
             let data = checkAndUpgradeSaveDict(configStr)
             this.setState(data)
-          }
-          localforage.setItem(SAVE_DICT_KEY.key, JSON.stringify({val: this.$state, version: SAVE_DICT_KEY.version}))
+          } 
+          localforage.setItem(SAVE_DICT_KEY.key, JSON.stringify({val: this.$state, version: SAVE_DICT_KEY.version})) //将数据保存到本地存储中
         } catch (e) {
           console.error('读取本地dict数据失败', e)
         }
         const runtimeStore = useRuntimeStore()
 
-        if (location.href.includes('?mode=article')) {
-          console.log('文章')
-          let dict = {
-            ...cloneDeep(DefaultDict),
-            id: 'article_nce2',
-            name: "新概念英语2-课文",
-            description: '新概念英语2-课文',
-            category: '英语学习',
-            tags: ['新概念英语'],
-            url: 'NCE_2.json',
-            translateLanguage: 'common',
-            language: 'en',
-            type: DictType.article,
-            resourceId: 'article_nce2',
-            length: 96
-          }
-          let rIndex = this.myDictList.findIndex((v: Dict) => v.id === dict.id)
-          if (rIndex > -1) {
-            this.myDictList[rIndex] = dict
-            this.current.index = rIndex
-          } else {
-            this.myDictList.push(cloneDeep(dict))
-            this.current.index = this.myDictList.length - 1
-          }
-        }
 
-        if (this.current.index < 3) {
-          // this.currentDict.words = cloneDeep(n)
-          // this.currentDict.chapterWords = [this.currentDict.words]
-        } else {
-          //自定义的词典，文章只删除了sections，单词并未做删除，所以这里不需要处理
-          if (this.currentDict.isCustom) {
-
-          } else {
-            //处理非自定义的情况。
-            let dictResourceUrl = `./dicts/${this.currentDict.language}/${this.currentDict.type}/${this.currentDict.translateLanguage}/${this.currentDict.url}`;
-            if ([DictType.word].includes(this.currentDict.type)) {
-              if (!this.currentDict.originWords.length) {
-                let r = await fetch(dictResourceUrl)
-                let v = await r.json()
-                v.map(s => {
-                  s.id = nanoid(6)
-                })
-                if (this.currentDict.translateLanguage === 'common') {
-                  let r2 = await fetch('./translate/en2zh_CN-min.json')
-                  // fetch('http://sc.ttentau.top/en2zh_CN-min.json').then(r2 => {
-                  let list: Word[] = await r2.json()
-                  if (list && list.length) {
-                    runtimeStore.translateWordList = list
-                  }
+        
+          
+        //处理非自定义的情况。
+        let dictResourceUrl = `./dicts/${this.currentDict.url}`;
+        if ([DictType.word].includes(this.currentDict.type)) {
+            if (!this.currentDict.originWords.length) {
+            let r = await fetch(dictResourceUrl)
+            let v = await r.json()
+            v.map(s => {
+                s.id = nanoid(6)
+            })
+            if (this.currentDict.translateLanguage === 'common') {
+                let r2 = await fetch('./translate/en2zh_CN-min.json')
+                let list: Word[] = await r2.json()
+                if (list && list.length) {
+                runtimeStore.translateWordList = list
                 }
-                this.currentDict.originWords = cloneDeep(v)
-                this.currentDict.words = cloneDeep(v)
-                this.currentDict.chapterWords = chunk(this.currentDict.words, this.currentDict.chapterWordNumber)
-              }
             }
-
-            if ([DictType.article].includes(this.currentDict.type)) {
-              if (!this.currentDict.articles.length) {
-                let r = await fetch(dictResourceUrl)
-                let s: any[] = await r.json()
-                this.currentDict.articles = cloneDeep(s.map(v => {
-                  v.id = nanoid(6)
-                  return v
-                }))
-              }
+            this.currentDict.originWords = cloneDeep(v)
+            this.currentDict.words = cloneDeep(v)
+            this.currentDict.chapterWords = chunk(this.currentDict.words, this.currentDict.chapterWordNumber)
             }
-          }
         }
+        
 
-        //TODO 先这样，默认加载
+        // 加载翻译词库
         if (!runtimeStore.translateWordList.length) {
           setTimeout(async () => {
             let r2 = await fetch('./translate/en2zh_CN-min.json')
@@ -328,17 +206,11 @@ export const useBaseStore = defineStore('base', {
         dict.chapterWordNumber = dict.words.length
         dict.chapterWords = [dict.words]
       } else {
-        if (dict.type === DictType.article) {
-          if (chapterIndex > dict.articles.length) {
-            dict.chapterIndex = 0
-            dict.wordIndex = 0
-          }
-        } else {
+        
           if (chapterIndex > dict.chapterWords.length) {
             dict.chapterIndex = 0
             dict.wordIndex = 0
           }
-        }
       }
       // await checkDictHasTranslate(dict)
       let rIndex = this.myDictList.findIndex((v: Dict) => v.id === dict.id)

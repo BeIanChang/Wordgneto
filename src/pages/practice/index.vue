@@ -6,12 +6,10 @@ import {usePracticeStore} from "@/stores/practice.ts";
 import Footer from "@/pages/practice/Footer.vue";
 import {useBaseStore} from "@/stores/base.ts";
 import {$ref} from "vue/macros";
-import Statistics from "@/pages/practice/Statistics.vue";
 import {emitter, EventKey} from "@/utils/eventBus.ts";
 import {useSettingStore} from "@/stores/setting.ts";
 import {useRuntimeStore} from "@/stores/runtime.ts";
 import {MessageBox} from "@/utils/MessageBox.tsx";
-import PracticeArticle from "@/pages/practice/practice-article/index.vue";
 import PracticeWord from "@/pages/practice/practice-word/index.vue";
 import {ShortcutKey} from "@/types.ts";
 import DictModal from "@/components/dialog/DictDiglog.vue";
@@ -144,19 +142,17 @@ useStartKeyboardEventListener()
   <div class="practice-wrapper">
     <Logo/>
     <Toolbar/>
-    <!--    <BaseButton @click="test">test</BaseButton>-->
-    <PracticeArticle ref="practiceRef" v-if="store.isArticle"/>
-    <PracticeWord ref="practiceRef" v-else/>
+    <!-- <BaseButton @click="test">test</BaseButton> -->
+    <PracticeWord ref="practiceRef"/>
     <Footer/>
   </div>
   <RightTopBar/>
   <DictModal/>
-  <Statistics/>
 </template>
 
 <style scoped lang="scss">
 .practice-wrapper {
-  font-size: 13rem;
+  font-size: 20rem;
   width: 100%;
   height: 100%;
   display: flex;
