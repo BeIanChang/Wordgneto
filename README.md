@@ -4,7 +4,7 @@ Vocabulary trainer that works offline, syncs progress with local storage, and ke
 
 ## 🎥 Demo
 
-https://github.com/BeIanChang/Wordgneto/assets/123456789/demo.mp4
+<video src="assets/demo.mp4" controls width="600"></video>
 
 ## What It Delivers
 - **Multi-dictionary practice:** Ships with CET-4/6 decks and lets users curate custom “collect”, “simple”, and “wrong-word” lists.
