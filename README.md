@@ -4,7 +4,7 @@ Vocabulary trainer that works offline, syncs progress with local storage, and ke
 
 ## 🎥 Demo
 
-<video src="assets/demo.mp4" controls width="600"></video>
+https://github.com/user-attachments/assets/95b2ea4d-fcd8-4b6c-87d6-bb30fed6d3e1
 
 ## What It Delivers
 - **Multi-dictionary practice:** Ships with CET-4/6 decks and lets users curate custom “collect”, “simple”, and “wrong-word” lists.
