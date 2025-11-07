@@ -2,9 +2,9 @@
 
 Vocabulary trainer that works offline, syncs progress with local storage, and keeps multiple dictionaries in play. Built with TypeScript + Vue 3 (Composition API) to showcase modern front-end engineering patterns: state management, persistence, theming, and smooth UX.
 
-## Runtime Screen Shot
+## 🎥 Demo
 
-![image-20251107160308636](assets/runtime.mov)
+https://github.com/BeIanChang/Wordgneto/assets/123456789/demo.mp4
 
 ## What It Delivers
 - **Multi-dictionary practice:** Ships with CET-4/6 decks and lets users curate custom “collect”, “simple”, and “wrong-word” lists.
